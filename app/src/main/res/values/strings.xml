@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Experiments with Kotlin</string>
     <string name="hallo">Try Kotlin !</string>
+    <string name="button_tap_me">Tap Me</string>
+    <string name="game_score">Your Score: %s</string>
+    <string name="time_left">Time Left: %s</string>
+    <string name="game_over_massege">Times up! Your score was: %s</string>
 </resources>
