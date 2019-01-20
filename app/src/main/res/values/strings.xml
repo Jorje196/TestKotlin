@@ -5,4 +5,9 @@
     <string name="game_score">Your Score: %s</string>
     <string name="time_left">Time Left: %s</string>
     <string name="game_over_massege">Times up! Your score was: %s</string>
+    <string name="about_menu">About</string>
+    <string name="save_result">Save</string>
+    <string name="about_title">Experiments with Kotlin %s</string>
+    <string name="about_message">Created by Jorje Sunson Developer</string>
+    <string name="save_message">Saved: Score = %s</string>
 </resources>
