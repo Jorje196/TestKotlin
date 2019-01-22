@@ -3,7 +3,7 @@
     android:fillAfter="true"
     android:shareInterpolator="@android:anim/bounce_interpolator">
     <scale
-        android:duration="1000"
+        android:duration="500"
         android:fromXScale="2.0"
         android:fromYScale="2.0"
         android:pivotX="50%"

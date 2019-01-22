@@ -15,36 +15,41 @@ import android.widget.TextView
 import android.widget.Toast
 
 
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var tapMeButton: Button
     private val initHorizontalBias: Float = 0.5f
     private var horizontalBias = initHorizontalBias
+    private val hEnumMin = 5
+    //private val hEnumStep = 1
+    private val hEnumMax = 95
+    private val vEnumMin = 3
+    //private val vEnumStep = 1
+    private val vEnumMax = 97
     private val initVerticalBias: Float = 0.5f
     private var verticalBias = initVerticalBias
     private lateinit var gameScoreTextView: TextView
     private lateinit var timeLeftTextView: TextView
-    internal var score = 0
+    private var score = 0
     private var gameStarted = false
-    internal lateinit var countDownTimer: CountDownTimer
+    private lateinit var countDownTimer: CountDownTimer
     private val initialCountDown: Long = 30000
     private val countDownInterval: Long = 1000
     private val TAG = MainActivity::class.java.simpleName
-    internal var timeLeftOnTimer: Long = initialCountDown
+    private var timeLeftOnTimer: Long = initialCountDown
     private var mConstraintSet = ConstraintSet()
 
 
     companion object {
-        private val SCORE_KEY = "SCORE_KEY"
-        private val TIME_LEFT_KEY = "TIME_LEFT_KEY"
-        private val HORIZONTAL_BIAS = "HORIZONTAL_BIAS"
-        private val VERTICAL_BIAS = "VERTICAL_BIAS"
+        private const val SCORE_KEY = "SCORE_KEY"
+        private const val TIME_LEFT_KEY = "TIME_LEFT_KEY"
+        private const val HORIZONTAL_BIAS = "HORIZONTAL_BIAS"
+        private const val VERTICAL_BIAS = "VERTICAL_BIAS"
     }
 
     private fun changeTapMeLocation() {
-        horizontalBias = (20..80).random().toFloat() / 100
-        verticalBias = (10..90).random().toFloat() / 100
+        horizontalBias = (hEnumMin..hEnumMax).random().toFloat() / 100
+        verticalBias = ( vEnumMin..vEnumMax).random().toFloat() / 100
         setTapMeLocation(horizontalBias, verticalBias)
     }
 
@@ -59,9 +64,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         Log.d(TAG, "onCreate called. Score is: $score")
 
-        tapMeButton = findViewById<Button>(R.id.tap_me_button)
-        gameScoreTextView = findViewById<TextView>(R.id.game_score_text_view)
-        timeLeftTextView = findViewById<TextView>(R.id.time_left_text_view)
+        tapMeButton = findViewById<Button>(R.id.tap_me_button)  // as exp
+        gameScoreTextView = findViewById(R.id.game_score_text_view)
+        timeLeftTextView = findViewById(R.id.time_left_text_view)
         mConstraintSet.clone( findViewById<ConstraintLayout>(R.id.root))
 
         if (savedInstanceState != null) {
@@ -197,3 +202,5 @@ class MainActivity : AppCompatActivity() {
         gameScoreTextView.startAnimation(blinkAnimation)
     }
 }
+
+
