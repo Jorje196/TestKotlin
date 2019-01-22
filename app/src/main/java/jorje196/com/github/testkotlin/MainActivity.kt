@@ -3,32 +3,55 @@ package jorje196.com.github.testkotlin
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.support.constraint.ConstraintLayout
+import android.support.constraint.ConstraintSet
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 
+
+
 class MainActivity : AppCompatActivity() {
 
-    internal lateinit var tapMeButton: Button
-    internal lateinit var gameScoreTextView: TextView
-    internal lateinit var timeLeftTextView: TextView
+    private lateinit var tapMeButton: Button
+    private val initHorizontalBias: Float = 0.5f
+    private var horizontalBias = initHorizontalBias
+    private val initVerticalBias: Float = 0.5f
+    private var verticalBias = initVerticalBias
+    private lateinit var gameScoreTextView: TextView
+    private lateinit var timeLeftTextView: TextView
     internal var score = 0
-    internal var gameStarted = false
+    private var gameStarted = false
     internal lateinit var countDownTimer: CountDownTimer
-    internal val initialCountDown: Long = 30000
-    internal val countDownInterval: Long = 1000
-    internal val TAG = MainActivity::class.java.simpleName
+    private val initialCountDown: Long = 30000
+    private val countDownInterval: Long = 1000
+    private val TAG = MainActivity::class.java.simpleName
     internal var timeLeftOnTimer: Long = initialCountDown
+    private var mConstraintSet = ConstraintSet()
+
 
     companion object {
         private val SCORE_KEY = "SCORE_KEY"
         private val TIME_LEFT_KEY = "TIME_LEFT_KEY"
+        private val HORIZONTAL_BIAS = "HORIZONTAL_BIAS"
+        private val VERTICAL_BIAS = "VERTICAL_BIAS"
+    }
+
+    private fun changeTapMeLocation() {
+        horizontalBias = (20..80).random().toFloat() / 100
+        verticalBias = (10..90).random().toFloat() / 100
+        setTapMeLocation(horizontalBias, verticalBias)
+    }
+
+    private fun setTapMeLocation(xBias: Float = initHorizontalBias, yBias: Float = initVerticalBias) {
+        mConstraintSet.setHorizontalBias(R.id.tap_me_button, xBias)
+        mConstraintSet.setVerticalBias(R.id.tap_me_button, yBias)
+        mConstraintSet.applyTo( findViewById(R.id.root))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,10 +62,13 @@ class MainActivity : AppCompatActivity() {
         tapMeButton = findViewById<Button>(R.id.tap_me_button)
         gameScoreTextView = findViewById<TextView>(R.id.game_score_text_view)
         timeLeftTextView = findViewById<TextView>(R.id.time_left_text_view)
+        mConstraintSet.clone( findViewById<ConstraintLayout>(R.id.root))
 
         if (savedInstanceState != null) {
             score = savedInstanceState.getInt(SCORE_KEY)
             timeLeftOnTimer = savedInstanceState.getLong(TIME_LEFT_KEY)
+            horizontalBias = savedInstanceState.getFloat(HORIZONTAL_BIAS)
+            verticalBias = savedInstanceState.getFloat(VERTICAL_BIAS)
             restoreGame()
         } else {
             resetGame()
@@ -52,6 +78,7 @@ class MainActivity : AppCompatActivity() {
             val bounceAnimation = AnimationUtils.loadAnimation(this, R.anim.bounce)
             view.startAnimation(bounceAnimation)
             incrementScore()
+            changeTapMeLocation()
         }
     }
 
@@ -59,17 +86,18 @@ class MainActivity : AppCompatActivity() {
         gameScoreTextView.text = getString(R.string.game_score, score.toString())
         val restoredTime = timeLeftOnTimer /1000
         timeLeftTextView.text = getString(R.string.time_left, restoredTime.toString())
+
         countDownTimer = object : CountDownTimer(timeLeftOnTimer, countDownInterval) {
             override fun onTick(millisUnitFinished: Long) {
                 timeLeftOnTimer = millisUnitFinished
                 val timeLeft = millisUnitFinished / 1000
                 timeLeftTextView.text = getString(R.string.time_left, timeLeft.toString())
             }
-
             override fun onFinish() {
                 endGame()
             }
         }
+        setTapMeLocation(horizontalBias, verticalBias)
         countDownTimer.start()
         gameStarted = true
     }
@@ -79,6 +107,8 @@ class MainActivity : AppCompatActivity() {
 
         outState.putInt(SCORE_KEY, score)
         outState.putLong(TIME_LEFT_KEY, timeLeftOnTimer)
+        outState.putFloat(HORIZONTAL_BIAS, horizontalBias)
+        outState.putFloat(VERTICAL_BIAS, verticalBias)
         countDownTimer.cancel()
         Log.d(TAG, "onSaveInstanceState: Saving score = $score & Time Left = $timeLeftOnTimer")
     }
@@ -144,6 +174,7 @@ class MainActivity : AppCompatActivity() {
                 endGame()
             }
         }
+        setTapMeLocation()
         gameStarted = false
     }
 
