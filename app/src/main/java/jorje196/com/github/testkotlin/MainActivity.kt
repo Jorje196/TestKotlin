@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         private const val TIME_LEFT_KEY = "TIME_LEFT_KEY"
         private const val HORIZONTAL_BIAS = "HORIZONTAL_BIAS"
         private const val VERTICAL_BIAS = "VERTICAL_BIAS"
+        private const val GAME_STARTED = "GAME_STARTED"
     }
 
     private fun changeTapMeLocation() {
@@ -69,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         timeLeftTextView = findViewById(R.id.time_left_text_view)
         mConstraintSet.clone( findViewById<ConstraintLayout>(R.id.root))
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && savedInstanceState.getBoolean(GAME_STARTED)) {
             score = savedInstanceState.getInt(SCORE_KEY)
             timeLeftOnTimer = savedInstanceState.getLong(TIME_LEFT_KEY)
             horizontalBias = savedInstanceState.getFloat(HORIZONTAL_BIAS)
@@ -109,7 +110,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
+        outState.putBoolean(GAME_STARTED, gameStarted)
         outState.putInt(SCORE_KEY, score)
         outState.putLong(TIME_LEFT_KEY, timeLeftOnTimer)
         outState.putFloat(HORIZONTAL_BIAS, horizontalBias)
