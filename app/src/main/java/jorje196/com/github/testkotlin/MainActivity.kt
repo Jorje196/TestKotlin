@@ -119,11 +119,6 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "onSaveInstanceState: Saving score = $score & Time Left = $timeLeftOnTimer")
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "onDestroy called.")
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.menu, menu)
@@ -202,6 +197,49 @@ class MainActivity : AppCompatActivity() {
         val blinkAnimation = AnimationUtils.loadAnimation(this, R.anim.blink)
         gameScoreTextView.startAnimation(blinkAnimation)
     }
+
+    override fun onStart() {
+        super.onStart()
+        val i = 1
+        Log.d(TAG, "onStart: Saving score = $score & Time Left = $timeLeftOnTimer")
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val i = 2
+        Log.d(TAG, "onRestoreInstanceState: Saving score = $score & Time Left = $timeLeftOnTimer")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val i = 3
+        Log.d(TAG, "onResume: Saving score = $score & Time Left = $timeLeftOnTimer")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        val i = 4
+        Log.d(TAG, "onPause: Saving score = $score & Time Left = $timeLeftOnTimer")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        val i = 5
+        Log.d(TAG, "onStop: Saving score = $score & Time Left = $timeLeftOnTimer")
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        restoreGame()
+        val i = 6
+        Log.d(TAG, "onRestart called.")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy called.")
+    }
+
 }
 
 
