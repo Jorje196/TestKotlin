@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="@string/save_result" android:id="@+id/save_result"
+    <item android:title="@string/item_save" android:id="@+id/save_result"
           android:icon="@android:drawable/ic_menu_save" app:showAsAction="always"/>
-    <item android:title="@string/about_menu" android:id="@+id/action_about"
+    <item android:title="@string/item_about" android:id="@+id/action_about"
           android:icon="@android:drawable/ic_dialog_info" app:showAsAction="always"/>
+    <item android:title="@string/item_reset" android:id="@+id/reset_result"
+          android:icon="@android:drawable/ic_delete" app:showAsAction="ifRoom"/>
 
 </menu>

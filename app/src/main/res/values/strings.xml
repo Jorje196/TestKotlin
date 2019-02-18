@@ -4,10 +4,12 @@
     <string name="button_tap_me">Tap Me</string>
     <string name="game_score">Your Score: %s</string>
     <string name="time_left">Time Left: %s</string>
-    <string name="game_over_massege">Times up! Your score was: %s</string>
-    <string name="about_menu">About</string>
-    <string name="save_result">Save</string>
+    <string name="game_over_massage">Times up! Your score: %s Best score: %s</string>
+    <string name="item_about">About</string>
+    <string name="item_reset">Reset</string>
+    <string name="item_save">Save</string>
     <string name="about_title">Experiments with Kotlin %s</string>
     <string name="about_message">Created by Jorje Sunson Developer</string>
     <string name="save_message">Saved: Score = %s</string>
+    <string name="reset_message">Data lost ! Start from %s</string>
 </resources>

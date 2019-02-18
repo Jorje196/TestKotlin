@@ -1,5 +1,7 @@
 package jorje196.com.github.testkotlin
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -25,11 +27,13 @@ fun debugLog (tag: String, msg: String) {
     }
 }
 
-/* TODO  Глянуть поведение на паузе.
+/* TODO  Глянуть поведение на паузе.                                it's done
    TODO  Можно добавить звук и нарастание скорости отсчета
-   TODO  Можно добавить сохранение результатов
+   TODO  Можно добавить сохранение результатов.                     it's done
    TODO  Можно добавить настройки (языки по рандому, период и пр.)
  */
+    private const val defMaxScore = 0
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var tapMeButton: Button
@@ -44,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var gameScoreTextView: TextView
     private lateinit var timeLeftTextView: TextView
     private var score = 0
+    private var maxScore = defMaxScore
     private var gameStarted = false
     private lateinit var countDownTimer: CountDownTimer
     private val initialCountDown: Long = 30000
@@ -51,19 +56,32 @@ class MainActivity : AppCompatActivity() {
     private val _tag = MainActivity::class.java.simpleName
     private var timeLeftOnTimer: Long = initialCountDown
     private var mConstraintSet = ConstraintSet()
+    private lateinit var appSettings: SharedPreferences
+
+
 
 
     companion object {
+            // Ключи сохраняемых при изменении конфигурации параметров
         private const val SCORE_KEY = "SCORE_KEY"
         private const val TIME_LEFT_KEY = "TIME_LEFT_KEY"
         private const val HORIZONTAL_BIAS = "HORIZONTAL_BIAS"
         private const val VERTICAL_BIAS = "VERTICAL_BIAS"
         private const val GAME_STARTED = "GAME_STARTED"
+            // save settings for
+        private const val APP_PROPERTIES = "app_settings"
+        private const val MAX_SCORE = "MAX_SCORE"
+
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        appSettings = getSharedPreferences(APP_PROPERTIES, Context.MODE_PRIVATE)
+        maxScore = appSettings.getInt(MAX_SCORE, defMaxScore)
+
         debugLog(_tag, "onCreate called. Score is: $score")
 
         tapMeButton = findViewById(R.id.tap_me_button)
@@ -152,7 +170,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun endGame() {
-        Toast.makeText(this, getString(R.string.game_over_massege, score.toString()), Toast.LENGTH_LONG).show()
+        Toast.makeText(this, getString(R.string.game_over_massage,
+            score.toString(), maxScore.toString()), Toast.LENGTH_LONG).show()
+        if (score > maxScore) {
+            maxScore = score
+            val appSettingEditor = appSettings.edit()
+            appSettingEditor.putInt(MAX_SCORE, maxScore).apply()
+        }
         resetGame()
     }
 
@@ -178,6 +202,7 @@ class MainActivity : AppCompatActivity() {
         when(item!!.itemId) {
             R.id.action_about ->  showInfo()
             R.id.save_result -> saveResult()
+            R.id.reset_result -> resetResult()
             else -> {
                 nothing()
                 return false
@@ -185,6 +210,14 @@ class MainActivity : AppCompatActivity() {
 
         }
         return true
+    }
+
+    private fun resetResult() {
+        maxScore = defMaxScore
+        val appSettingEditor = appSettings.edit()
+        appSettingEditor.putInt(MAX_SCORE, maxScore).apply()
+        val toastMessage = getString(R.string.reset_message, maxScore.toString())
+        Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show()
     }
 
     private fun showInfo() {
@@ -228,6 +261,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         debugLog(_tag, "onStop: Saving score = $score & Time Left = $timeLeftOnTimer")
+
     }
 
     override fun onRestart() {
@@ -239,6 +273,9 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer.cancel()
+ /*       if (propetiesChanged) {
+            appSettingEditor.commit()
+        } */
         debugLog(_tag, "onDestroy called.")
     }
 
