@@ -78,6 +78,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        // Отличное имя активности и приложения
+        this.title = resources.getString(R.string.act_name)
 
         appSettings = getSharedPreferences(APP_PROPERTIES, Context.MODE_PRIVATE)
         maxScore = appSettings.getInt(MAX_SCORE, defMaxScore)
