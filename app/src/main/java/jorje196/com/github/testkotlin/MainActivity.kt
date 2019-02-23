@@ -12,7 +12,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.animation.AnimationUtils
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 
@@ -36,7 +36,7 @@ fun debugLog (tag: String, msg: String) {
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var tapMeButton: Button
+    private lateinit var tapMeButton: ImageButton
     private val initHorizontalBias: Float = 0.5f
     private var horizontalBias = initHorizontalBias
     private val hEnumMin = 5
