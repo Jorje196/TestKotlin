@@ -268,6 +268,7 @@ class MainActivity : AppCompatActivity() {
     private fun clearAll() {
         resetResult()
         buttonSizeIndex = defSizeIndex
+        setButtonSize(defSizeIndex)
         soundTapOn = false
         resetGame()
     }
