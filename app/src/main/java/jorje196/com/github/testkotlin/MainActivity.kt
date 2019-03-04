@@ -49,6 +49,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var timeLeftTextView: TextView
     private var score = 0
     private var maxScore = defMaxScore
+    private var soundTapOn = false
+    private val defSizeIndex = 1
+    private val sizeOffset = -1
+//    private val sizeEnum = listOf("small", "middle", "large")
+    private val resSizeTitles = listOf(R.string.small_size,
+        R.string.middle_size, R.string.large_size)
+    private val titlesListSize = resSizeTitles.count()
+    private val resSizeImages = listOf(R.drawable.tap_me_small_mob,
+        R.drawable.tap_me_middle_mob, R.drawable.tap_me_large_mob)
+    private val imagesListSize = resSizeImages.count()
+    private var buttonSizeIndex = defSizeIndex
     private var gameStarted = false
     private lateinit var countDownTimer: CountDownTimer
     private val initialCountDown: Long = 30000
@@ -59,8 +70,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appSettings: SharedPreferences
 
 
-
-
     companion object {
             // Ключи сохраняемых при изменении конфигурации параметров
         private const val SCORE_KEY = "SCORE_KEY"
@@ -68,6 +77,8 @@ class MainActivity : AppCompatActivity() {
         private const val HORIZONTAL_BIAS = "HORIZONTAL_BIAS"
         private const val VERTICAL_BIAS = "VERTICAL_BIAS"
         private const val GAME_STARTED = "GAME_STARTED"
+        private const val TAP_SOUND = "TAP_SOUND"
+        private const val BUTTON_SIZE = "BUTTON_SIZE"
             // save settings for
         private const val APP_PROPERTIES = "app_settings"
         private const val MAX_SCORE = "MAX_SCORE"
@@ -78,30 +89,38 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        // Отличное имя активности и приложения
+        // Различаем имена активности и приложения
         this.title = resources.getString(R.string.act_name)
 
         appSettings = getSharedPreferences(APP_PROPERTIES, Context.MODE_PRIVATE)
         maxScore = appSettings.getInt(MAX_SCORE, defMaxScore)
+        // full form: findViewById<Button>(R.id.tap_me_button)
+        tapMeButton = findViewById(R.id.tap_me_button)
 
         debugLog(_tag, "onCreate called. Score is: $score")
 
-        tapMeButton = findViewById(R.id.tap_me_button)
-                        // full form: findViewById<Button>(R.id.tap_me_button)
         gameScoreTextView = findViewById(R.id.game_score_text_view)
         timeLeftTextView = findViewById(R.id.time_left_text_view)
         mConstraintSet.clone( findViewById<ConstraintLayout>(R.id.root))
 
-        if (savedInstanceState != null && savedInstanceState.getBoolean(GAME_STARTED)) {
-            gameStarted = savedInstanceState.getBoolean(GAME_STARTED)
-            score = savedInstanceState.getInt(SCORE_KEY)
-            timeLeftOnTimer = savedInstanceState.getLong(TIME_LEFT_KEY)
-            horizontalBias = savedInstanceState.getFloat(HORIZONTAL_BIAS)
-            verticalBias = savedInstanceState.getFloat(VERTICAL_BIAS)
-            restoreGame()
-        } else {
-            resetGame()
-        }
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getBoolean(GAME_STARTED)) {
+                gameStarted = savedInstanceState.getBoolean(GAME_STARTED)
+                score = savedInstanceState.getInt(SCORE_KEY)
+                timeLeftOnTimer = savedInstanceState.getLong(TIME_LEFT_KEY)
+                horizontalBias = savedInstanceState.getFloat(HORIZONTAL_BIAS)
+                verticalBias = savedInstanceState.getFloat(VERTICAL_BIAS)
+                restoreGame()}
+            else {
+                resetGame() }
+            buttonSizeIndex = savedInstanceState.getInt(BUTTON_SIZE)
+            setButtonSize(buttonSizeIndex)
+            soundTapOn = savedInstanceState.getBoolean(TAP_SOUND) }
+        else {
+            debugLog(_tag, "lists length are " +
+                if (titlesListSize == imagesListSize) "equal" else "not equal")
+            buttonSizeIndex = defSizeIndex
+            resetGame() }
 
         tapMeButton.setOnClickListener { view ->
             val bounceAnimation = AnimationUtils.loadAnimation(this, R.anim.bounce)
@@ -172,7 +191,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun endGame() {
-        Toast.makeText(this, getString(R.string.game_over_massage,
+        Toast.makeText(this,  getString(R.string.game_over_massage,
             score.toString(), maxScore.toString()), Toast.LENGTH_LONG).show()
         if (score > maxScore) {
             maxScore = score
@@ -189,29 +208,68 @@ class MainActivity : AppCompatActivity() {
         outState.putLong(TIME_LEFT_KEY, timeLeftOnTimer)
         outState.putFloat(HORIZONTAL_BIAS, horizontalBias)
         outState.putFloat(VERTICAL_BIAS, verticalBias)
+        outState.putBoolean(TAP_SOUND, soundTapOn)
+        outState.putInt(BUTTON_SIZE, buttonSizeIndex)
         countDownTimer.cancel()
         debugLog(_tag, "onSaveInstanceState: Saving score = $score & Time Left = $timeLeftOnTimer")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        super.onCreateOptionsMenu(menu)
-        menuInflater.inflate(R.menu.menu, menu)
-        return true
+        menuInflater.inflate(R.menu.menu, menu)  //
+        return super.onCreateOptionsMenu(menu)
+    }
+
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        if (soundTapOn) {
+            menu.findItem(R.id.sound_item).title = getString(R.string.sound_off)
+        }
+
+        setMenuItemTitle(buttonSizeIndex, menu.findItem(R.id.button_size_item))
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-
         when(item!!.itemId) {
             R.id.action_about ->  showInfo()
-            R.id.save_result -> saveResult()
             R.id.reset_result -> resetResult()
+            R.id.sound_item -> {
+                if (soundTapOn) {
+                    soundTapOn = false
+                    item.title = getString(R.string.sound_on)
+                } else {
+                    soundTapOn = true
+                    item.title = getString(R.string.sound_off) }
+            }
+            R.id.button_size_item -> {
+                buttonSizeIndex = nextSizeIndex(buttonSizeIndex)
+                setButtonSize(sizeIndex = buttonSizeIndex)
+            }
+            R.id.clear_all_item -> clearAll()
             else -> {
                 nothing()
-                return false
-            }
-
+                return false }
         }
         return true
+    }
+
+    private fun nextSizeIndex(sizeIndex: Int = defSizeIndex): Int {
+        val size = titlesListSize  // resSizeTitles.count()
+        return (sizeIndex + size - sizeOffset) % size
+    }
+    private fun setButtonSize(sizeIndex: Int = defSizeIndex) {
+        tapMeButton.setImageResource(resSizeImages[sizeIndex])
+    }
+
+    private fun setMenuItemTitle(index: Int = 0, item: MenuItem?) {
+            item?.title = getString(resSizeTitles[nextSizeIndex(index)])
+    }
+
+    private fun clearAll() {
+        resetResult()
+        buttonSizeIndex = defSizeIndex
+        soundTapOn = false
+        resetGame()
     }
 
     private fun resetResult() {
@@ -229,11 +287,6 @@ class MainActivity : AppCompatActivity() {
         builder.setTitle(dialogTitle)
         builder.setMessage(dialogMessage)
         builder.create().show()
-    }
-
-    private fun saveResult() {
-        val toastMessage = getString(R.string.save_message, score.toString())
-        Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show()
     }
 
     private fun nothing() {
@@ -275,10 +328,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer.cancel()
- /*       if (propetiesChanged) {
-            appSettingEditor.commit()
-        } */
         debugLog(_tag, "onDestroy called.")
     }
-
 }

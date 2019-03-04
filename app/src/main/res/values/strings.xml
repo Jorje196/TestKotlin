@@ -7,10 +7,16 @@
     <string name="time_left">Time Left: %s</string>
     <string name="game_over_massage">Times up! Your score: %s Best score: %s</string>
     <string name="item_about">About</string>
-    <string name="item_reset">Reset</string>
-    <string name="item_save">Save</string>
+    <string name="item_reset">Clear results</string>
+    <string name="item_settings">Settings</string>
     <string name="about_title">Experiments with Kotlin %s</string>
     <string name="about_message">Created by Jorje Sunson Developer</string>
     <string name="save_message">Saved: Score = %s</string>
     <string name="reset_message">Data lost ! Start from %s</string>
+    <string name="small_size">Button  Small</string>
+    <string name="middle_size">Button  Middle</string>
+    <string name="large_size">Button  Large</string>
+    <string name="sound_off">"Sound  Off"</string>
+    <string name="sound_on">"Sound  On"</string>
+    <string name="clear_all_item">Clear all</string>
 </resources>
