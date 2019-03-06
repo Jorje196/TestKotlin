@@ -2,6 +2,8 @@ package jorje196.com.github.testkotlin
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -72,6 +74,7 @@ class MainActivity : AppCompatActivity() {
     private var timeLeftOnTimer: Long = initialCountDown
     private var mConstraintSet = ConstraintSet()
     private lateinit var appSettings: SharedPreferences
+    private lateinit var tg: ToneGenerator
 
 
     companion object {
@@ -104,6 +107,8 @@ class MainActivity : AppCompatActivity() {
 
         debugLog(_tag, "onCreate called. Score is: $score")
 
+        tg = ToneGenerator(AudioManager.STREAM_SYSTEM, ToneGenerator.MAX_VOLUME/2)
+
         gameScoreTextView = findViewById(R.id.game_score_text_view)
         timeLeftTextView = findViewById(R.id.time_left_text_view)
         mConstraintSet.clone( findViewById<ConstraintLayout>(R.id.root))
@@ -131,6 +136,7 @@ class MainActivity : AppCompatActivity() {
             val bounceAnimation = AnimationUtils.loadAnimation(this, R.anim.bounce)
             view.startAnimation(bounceAnimation)
             incrementScore()
+            tg.startTone(ToneGenerator.TONE_PROP_BEEP)
             changeTapMeLocation()
         }
     }
