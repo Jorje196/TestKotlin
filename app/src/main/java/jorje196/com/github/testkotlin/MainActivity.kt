@@ -8,6 +8,7 @@ import android.os.CountDownTimer
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.support.v7.app.AlertDialog
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -50,7 +51,9 @@ class MainActivity : AppCompatActivity() {
     private var score = 0
     private var maxScore = defMaxScore
     private var soundTapOn = false
-    private val defSizeIndex = 1
+    private val defSizeIndexMob = 1
+    private val defSizeIndexTab = 2
+    private  var defSizeIndex = defSizeIndexMob
     private val sizeOffset = -1
 //    private val sizeEnum = listOf("small", "middle", "large")
     private val resSizeTitles = listOf(R.string.small_size,
@@ -59,7 +62,8 @@ class MainActivity : AppCompatActivity() {
     private val resSizeImages = listOf(R.drawable.tap_me_small_mob,
         R.drawable.tap_me_middle_mob, R.drawable.tap_me_large_mob)
     private val imagesListSize = resSizeImages.count()
-    private var buttonSizeIndex = defSizeIndex
+
+    private var buttonSizeIndex: Int? = null
     private var gameStarted = false
     private lateinit var countDownTimer: CountDownTimer
     private val initialCountDown: Long = 30000
@@ -91,7 +95,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         // Различаем имена активности и приложения
         this.title = resources.getString(R.string.act_name)
-
+        defSizeIndex = if(isItMobile(this)) defSizeIndexMob else defSizeIndexTab
+        buttonSizeIndex = defSizeIndex
         appSettings = getSharedPreferences(APP_PROPERTIES, Context.MODE_PRIVATE)
         maxScore = appSettings.getInt(MAX_SCORE, defMaxScore)
         // full form: findViewById<Button>(R.id.tap_me_button)
@@ -114,7 +119,7 @@ class MainActivity : AppCompatActivity() {
             else {
                 resetGame() }
             buttonSizeIndex = savedInstanceState.getInt(BUTTON_SIZE)
-            setButtonSize(buttonSizeIndex)
+            setButtonSize(buttonSizeIndex!!)
             soundTapOn = savedInstanceState.getBoolean(TAP_SOUND) }
         else {
             debugLog(_tag, "lists length are " +
@@ -209,7 +214,7 @@ class MainActivity : AppCompatActivity() {
         outState.putFloat(HORIZONTAL_BIAS, horizontalBias)
         outState.putFloat(VERTICAL_BIAS, verticalBias)
         outState.putBoolean(TAP_SOUND, soundTapOn)
-        outState.putInt(BUTTON_SIZE, buttonSizeIndex)
+        outState.putInt(BUTTON_SIZE, buttonSizeIndex!!)
         countDownTimer.cancel()
         debugLog(_tag, "onSaveInstanceState: Saving score = $score & Time Left = $timeLeftOnTimer")
     }
@@ -225,7 +230,7 @@ class MainActivity : AppCompatActivity() {
             menu.findItem(R.id.sound_item).title = getString(R.string.sound_off)
         }
 
-        setMenuItemTitle(buttonSizeIndex, menu.findItem(R.id.button_size_item))
+        setMenuItemTitle(buttonSizeIndex!!, menu.findItem(R.id.button_size_item))
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -242,8 +247,8 @@ class MainActivity : AppCompatActivity() {
                     item.title = getString(R.string.sound_off) }
             }
             R.id.button_size_item -> {
-                buttonSizeIndex = nextSizeIndex(buttonSizeIndex)
-                setButtonSize(sizeIndex = buttonSizeIndex)
+                buttonSizeIndex = nextSizeIndex(buttonSizeIndex!!)
+                setButtonSize(sizeIndex = buttonSizeIndex!!)
             }
             R.id.clear_all_item -> clearAll()
             else -> {
@@ -263,6 +268,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun setMenuItemTitle(index: Int = 0, item: MenuItem?) {
             item?.title = getString(resSizeTitles[nextSizeIndex(index)])
+    }
+
+    private fun isItMobile(context: Context): Boolean {
+        val manager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        var x = manager.phoneType
+        x = TelephonyManager.PHONE_TYPE_NONE
+        return manager.phoneType != TelephonyManager.PHONE_TYPE_NONE
     }
 
     private fun clearAll() {

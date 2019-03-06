@@ -14,5 +14,5 @@
     <item android:title="@string/small_size" android:id="@+id/button_size_item"
           app:showAsAction="never"/>
     <item android:title="@string/clear_all_item" android:id="@+id/clear_all_item" android:orderInCategory="100"
-          android:icon="@drawable/ic_menu_clear_all" app:showAsAction="ifRoom"/>
+          android:icon="@drawable/ic_menu_clear_all" app:showAsAction="never"/>
  </menu>
