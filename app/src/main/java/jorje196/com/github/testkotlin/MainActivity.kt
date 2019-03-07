@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
 
         debugLog(_tag, "onCreate called. Score is: $score")
 
-        tg = ToneGenerator(AudioManager.STREAM_SYSTEM, ToneGenerator.MAX_VOLUME/2)
+        tg = ToneGenerator(AudioManager.STREAM_SYSTEM, ToneGenerator.MAX_VOLUME)
 
         gameScoreTextView = findViewById(R.id.game_score_text_view)
         timeLeftTextView = findViewById(R.id.time_left_text_view)
@@ -136,14 +136,14 @@ class MainActivity : AppCompatActivity() {
             val bounceAnimation = AnimationUtils.loadAnimation(this, R.anim.bounce)
             view.startAnimation(bounceAnimation)
             incrementScore()
-            tg.startTone(ToneGenerator.TONE_PROP_BEEP)
+            if (soundTapOn) tg.startTone(ToneGenerator.TONE_PROP_BEEP)
             changeTapMeLocation()
         }
     }
 
     private fun incrementScore() {
         if (!gameStarted) startGame()
-        score += 1
+        score ++
         val newScore = getString(R.string.game_score, score.toString())
         gameScoreTextView.text = newScore
         val blinkAnimation = AnimationUtils.loadAnimation(this, R.anim.blink)
@@ -272,14 +272,12 @@ class MainActivity : AppCompatActivity() {
         tapMeButton.setImageResource(resSizeImages[sizeIndex])
     }
 
-    private fun setMenuItemTitle(index: Int = 0, item: MenuItem?) {
-            item?.title = getString(resSizeTitles[nextSizeIndex(index)])
+    private fun setMenuItemTitle(index: Int = 0, item: MenuItem) {
+            item.title = getString(resSizeTitles[nextSizeIndex(index)])
     }
 
     private fun isItMobile(context: Context): Boolean {
         val manager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        var x = manager.phoneType
-        x = TelephonyManager.PHONE_TYPE_NONE
         return manager.phoneType != TelephonyManager.PHONE_TYPE_NONE
     }
 
